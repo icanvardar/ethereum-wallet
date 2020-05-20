@@ -25,7 +25,7 @@ export default NavigationProvider = () => {
     <NavigationContainer>
       {isAuthenticated === false && (
         <Stack.Navigator>
-          <Stack.Screen name="Authentication" component={Authentication} />
+          <Stack.Screen options={{headerShown: false}} name="Authentication" component={Authentication} />
           <Stack.Screen name="ImportWallet" component={ImportWallet} />
           <Stack.Screen name="CreateWallet" component={CreateWallet} />
         </Stack.Navigator>
