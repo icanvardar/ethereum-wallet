@@ -25,9 +25,41 @@ export default NavigationProvider = () => {
     <NavigationContainer>
       {isAuthenticated === false && (
         <Stack.Navigator>
-          <Stack.Screen options={{headerShown: false}} name="Authentication" component={Authentication} />
-          <Stack.Screen name="ImportWallet" component={ImportWallet} />
-          <Stack.Screen name="CreateWallet" component={CreateWallet} />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Authentication"
+            component={Authentication}
+          />
+          <Stack.Screen
+            options={{
+              headerTransparent: true,
+              headerTintColor: "white",
+              title: "Import Wallet",
+              headerTitleStyle: {
+                fontFamily: "BalsamiqBold",
+                fontSize: 25,
+                marginTop: -10
+              },
+              headerTitleAlign: "center",
+            }}
+            name="ImportWallet"
+            component={ImportWallet}
+          />
+          <Stack.Screen
+            options={{
+              headerTransparent: true,
+              headerTintColor: "white",
+              title: "Create Wallet",
+              headerTitleStyle: {
+                fontFamily: "BalsamiqBold",
+                fontSize: 25,
+                marginTop: -10
+              },
+              headerTitleAlign: "center"
+            }}
+            name="CreateWallet"
+            component={CreateWallet}
+          />
         </Stack.Navigator>
       )}
       {isAuthenticated === true && (

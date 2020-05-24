@@ -23,7 +23,7 @@ export default Authorization = ({navigation}) => {
       </View>
       <View style={styles.cardsContainer}>
         <TouchableNativeFeedback onPress={() => navigation.navigate('ImportWallet')}>
-          <View style={styles.informativeCard2}>
+          <View style={styles.informativeCard1}>
             <Text style={styles.cardHeading1}>Import Wallet</Text>
             <Text style={styles.cardText1}>
               You've already got wallet? Import your wallet by using private key
@@ -33,7 +33,7 @@ export default Authorization = ({navigation}) => {
         </TouchableNativeFeedback>
 
         <TouchableNativeFeedback onPress={() => navigation.navigate('CreateWallet')}>
-          <View style={styles.informativeCard}>
+          <View style={styles.informativeCard2}>
             <Text style={styles.cardHeading2}>Create Wallet</Text>
             <Text style={styles.cardText2}>
               You don't have a wallet, yet? Set up your first wallet, instantly!
@@ -47,11 +47,11 @@ export default Authorization = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 60,
+    paddingTop: 60,
   },
-  informativeCard: {
+  informativeCard1: {
     justifyContent: "center",
-    backgroundColor: "tomato",
+    backgroundColor: "white",
     borderColor: "#fff",
     height: 140,
     width: width / 1.2,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   informativeCard2: {
     justifyContent: "center",
-    backgroundColor: "white",
+    backgroundColor: "tomato",
     borderColor: "#fff",
     height: 140,
     width: width / 1.2,
