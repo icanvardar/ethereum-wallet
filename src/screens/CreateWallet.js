@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -14,6 +14,9 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
+import AuthenticationProvider, {
+  AuthenticationContext,
+} from "../context/AuthenticationProvider";
 const { ethers } = require('ethers');
 
 const { height, width } = Dimensions.get("window");
@@ -26,11 +29,12 @@ export default CreateWallet = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
+  const { login } = useContext(AuthenticationContext);
+
   useEffect(() => {
     const createdWallet = ethers.Wallet.createRandom();
     console.log(createdWallet.mnemonic);
     setWalletInstance(createdWallet);
-    
   }, []);
 
   useEffect(() => {
@@ -51,7 +55,9 @@ export default CreateWallet = () => {
 
   const setWallet = async () => {
     await AsyncStorage.setItem("password", password);
+    await AsyncStorage.setItem("addressCount", "0");
     await AsyncStorage.setItem("wallet", JSON.stringify(walletInstance));
+    login();
   }
 
   return (
