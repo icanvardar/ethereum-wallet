@@ -5,12 +5,26 @@ import {
   View,
   TouchableNativeFeedback,
   Dimensions,
+  AsyncStorage,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 const { height, width } = Dimensions.get("window");
 
-export default Authorization = ({navigation}) => {
+export default Authorization = ({ navigation }) => {
+  // useEffect(() => {
+  //   AsyncStorage.getItem("password")
+  //     .then((data) => {
+  //       console.log(data);
+  //       return AsyncStorage.getItem("wallet");
+  //     })
+  //     .then((data) => {
+  //       console.log(data);
+  //       const wallet  = JSON.parse(data);
+  //       console.log(wallet);
+  //     });
+  // }, []);
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -22,7 +36,9 @@ export default Authorization = ({navigation}) => {
         <Text style={styles.heading2}>STARTED</Text>
       </View>
       <View style={styles.cardsContainer}>
-        <TouchableNativeFeedback onPress={() => navigation.navigate('ImportWallet')}>
+        <TouchableNativeFeedback
+          onPress={() => navigation.navigate("ImportWallet")}
+        >
           <View style={styles.informativeCard1}>
             <Text style={styles.cardHeading1}>Import Wallet</Text>
             <Text style={styles.cardText1}>
@@ -32,7 +48,9 @@ export default Authorization = ({navigation}) => {
           </View>
         </TouchableNativeFeedback>
 
-        <TouchableNativeFeedback onPress={() => navigation.navigate('CreateWallet')}>
+        <TouchableNativeFeedback
+          onPress={() => navigation.navigate("CreateWallet")}
+        >
           <View style={styles.informativeCard2}>
             <Text style={styles.cardHeading2}>Create Wallet</Text>
             <Text style={styles.cardText2}>

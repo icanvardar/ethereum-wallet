@@ -10,36 +10,56 @@ import {
   Clipboard,
   TextInput,
   TouchableNativeFeedback,
+  KeyboardAvoidingView
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
-import { createWallet } from "../utils/walletOperations";
+const { ethers } = require('ethers');
 
 const { height, width } = Dimensions.get("window");
 
 export default CreateWallet = () => {
   const [walletInstance, setWalletInstance] = useState(null);
   const [mnemonicCopied, setMnemonicCopied] = useState(false);
+  const [password, setPassword] = useState(null);
+  const [repeatPassword, setRepeatPassword] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  // useEffect(() => {
-  //   console.log(createWallet().mnemonic);
-  //   console.log(createWallet().privateKey);
-  //   setWalletInstance(createWallet());
-  // }, []);
+  useEffect(() => {
+    const createdWallet = ethers.Wallet.createRandom();
+    console.log(createdWallet.mnemonic);
+    setWalletInstance(createdWallet);
+    
+  }, []);
 
-  // useEffect(() => {
-  //   if (walletInstance !== null) {
-  //     const storedWallet = {
-  //       mnemonic: walletInstance.mnemonic,
-  //       privateKey: walletInstance.privateKey,
-  //     };
+  useEffect(() => {
+    if (password !== null) {
+      if (password.length < 4) {
+        setErrorMessage("Password must be at least 4 character!");
+        setButtonDisabled(true);
+      }
+      else if (password !== repeatPassword) {
+        setErrorMessage("Passwords not matched!");
+        setButtonDisabled(true);
+      } else {
+        setErrorMessage(null);
+        setButtonDisabled(false);
+      }
+    }
+  }, [password, repeatPassword])
 
-  //     AsyncStorage.setItem("wallet", JSON.stringify(storedWallet));
-  //   }
-  // }, [walletInstance]);
+  const setWallet = async () => {
+    await AsyncStorage.setItem("password", password);
+    await AsyncStorage.setItem("wallet", JSON.stringify(walletInstance));
+  }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      style={styles.container}
+      enabled={true}
+    >
       <LinearGradient
         colors={["red", "transparent"]}
         style={{
@@ -58,7 +78,7 @@ export default CreateWallet = () => {
         }}
       ></View>
 
-      {walletInstance === null ? (
+      {walletInstance !== null ? (
         <View style={styles.cardContainer}>
           <Text style={styles.screenInformation}>
             Your wallet is almost ready! Please provide a password to reach your
@@ -81,8 +101,7 @@ export default CreateWallet = () => {
               <Text style={styles.mnemonicCopy}>Copied</Text>
             )}
             <Text style={styles.mnemonicText}>
-              distance man demand spoon kangaroo hen chronic broccoli yellow
-              jelly thank luggage
+              {walletInstance.mnemonic}
             </Text>
           </View>
 
@@ -90,14 +109,20 @@ export default CreateWallet = () => {
             secureTextEntry={true}
             placeholder="Password"
             style={styles.passwordInput}
+            onChangeText={text => setPassword(text)}
           />
           <TextInput
             secureTextEntry={true}
             placeholder="Repeat Password"
-            style={[styles.passwordInput, { fontSize: 16 }]}
+            style={styles.passwordInput}
+            onChangeText={text => setRepeatPassword(text)}
           />
-          <TouchableNativeFeedback>
-            <View style={styles.continueButton}>
+          {
+            errorMessage !== null &&
+            <Text style={styles.errorMessageText}>{errorMessage}</Text>
+          }
+          <TouchableNativeFeedback disabled={buttonDisabled} onPress={setWallet}>
+            <View style={buttonDisabled ? styles.continueButtonDisabled : styles.continueButton}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </View>
           </TouchableNativeFeedback>
@@ -110,7 +135,7 @@ export default CreateWallet = () => {
           </Text>
         </View>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -219,9 +244,41 @@ const styles = StyleSheet.create({
     fontFamily: "Balsamiq",
     fontSize: 16,
   },
+  continueButtonDisabled: {
+    backgroundColor: "tomato",
+    opacity: 0.6,
+    borderColor: "#fff",
+    height: 50,
+    width: width / 3,
+    borderRadius: 5,
+    marginHorizontal: 10,
+    marginVertical: 15,
+    paddingHorizontal: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    ...Platform.select({
+      ios: {
+        shadowColor: "rgba(0,0,0, 0.4)",
+        shadowOffset: { height: 3, width: 0 },
+        shadowOpacity: 0.7,
+        shadowRadius: 5,
+      },
+      android: {
+        elevation: 15,
+      },
+    }),
+    color: "tomato",
+    fontFamily: "Balsamiq",
+    fontSize: 16,
+  },
   continueButtonText: {
     fontFamily: "BalsamiqBold",
     fontSize: 16,
     color: "white",
+  },
+  errorMessageText: {
+    fontFamily: "BalsamiqBold",
+    fontSize: 16,
+    color: "tomato",
   },
 });
