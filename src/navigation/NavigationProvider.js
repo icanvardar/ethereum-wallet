@@ -3,9 +3,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 
-import AuthenticationProvider, {
-  AuthenticationContext,
-} from "../context/AuthenticationProvider";
+import { AuthenticationContext } from "../context/AuthenticationProvider";
+
+import WalletProvider from "../context/WalletProvider";
 
 import Home from "../screens/Home";
 import Transaction from "../screens/Transaction";
@@ -38,7 +38,7 @@ export default NavigationProvider = () => {
               headerTitleStyle: {
                 fontFamily: "BalsamiqBold",
                 fontSize: 25,
-                marginTop: -10
+                marginTop: -10,
               },
               headerTitleAlign: "center",
             }}
@@ -53,9 +53,9 @@ export default NavigationProvider = () => {
               headerTitleStyle: {
                 fontFamily: "BalsamiqBold",
                 fontSize: 25,
-                marginTop: -10
+                marginTop: -10,
               },
-              headerTitleAlign: "center"
+              headerTitleAlign: "center",
             }}
             name="CreateWallet"
             component={CreateWallet}
@@ -63,12 +63,14 @@ export default NavigationProvider = () => {
         </Stack.Navigator>
       )}
       {isAuthenticated === true && (
-        <Tab.Navigator>
-          <Tab.Screen name="Home" component={Home} />
-          <Tab.Screen name="Transaction" component={Transaction} />
-          <Tab.Screen name="History" component={History} />
-          <Tab.Screen name="Settings" component={Settings} />
-        </Tab.Navigator>
+        <WalletProvider>
+          <Tab.Navigator>
+            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="Transaction" component={Transaction} />
+            <Tab.Screen name="History" component={History} />
+            <Tab.Screen name="Settings" component={Settings} />
+          </Tab.Navigator>
+        </WalletProvider>
       )}
     </NavigationContainer>
   );
