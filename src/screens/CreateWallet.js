@@ -55,8 +55,19 @@ export default CreateWallet = () => {
 
   const setWallet = async () => {
     await AsyncStorage.setItem("password", password);
-    await AsyncStorage.setItem("addressCount", "0");
-    await AsyncStorage.setItem("wallet", JSON.stringify(walletInstance));
+    let storedWalletData = {
+      accounts: [
+        {
+          address: walletInstance.signingKey.address,
+          accountName: "Account 1"
+        }
+      ],
+      accountsCount: 0,
+      privateKey: walletInstance.signingKey.privateKey,
+      mnemonic: walletInstance.signingKey.mnemonic,
+      path: walletInstance.signingKey.path
+    }
+    await AsyncStorage.setItem("wallet", JSON.stringify(storedWalletData));
     login();
   }
 

@@ -7,12 +7,6 @@ import { WalletContext } from "../context/WalletProvider";
 
 const { height, width } = Dimensions.get("window");
 
-const addresses = [
-  "0xsdolksafok32ıdjfaıofjsf",
-  "0xasdıjofıeowjewıfjmaıo",
-  "0xspdokfowepkopwkewşf",
-];
-
 export default Home = () => {
   let listRef = useRef(null);
 
@@ -20,31 +14,52 @@ export default Home = () => {
     listRef.scrollToIndex({ animated: true, index, viewPosition: 0.5 });
   };
 
-  const { wallet } = useContext(WalletContext);
+  const directListItemsToEnd = () => {
+    listRef.scrollToEnd();
+  };
+
+  const { wallet, accountCount, currentAccount } = useContext(
+    WalletContext
+  );
+
+  // if (wallet) {
+  //   console.log(wallet.accounts[0].accountName);
+  // }
 
   return (
     <View style={styles.container}>
       <Text style={styles.cardHeading}>Accounts</Text>
       <View style={{ flex: 1 }}>
         <FlatList
-          data={addresses}
+          data={wallet && wallet.accounts}
           renderItem={({ item, index }) => (
             <AccountCard
-              length={addresses.length}
+              length={wallet && wallet.accounts.length}
               index={index}
+              accountName={wallet.accounts[index].accountName}
               directListItems={directListItems}
+              directListItemsToEnd={directListItemsToEnd}
               item={item}
             />
           )}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.address}
           horizontal={true}
           ref={(ref) => (listRef = ref)}
           scrollEnabled={false}
+          ListFooterComponent={
+            <AccountCard
+              length={wallet && wallet.accounts.length}
+              isAccountAdder={true}
+              directListItems={directListItems}
+              directListItemsToEnd={directListItemsToEnd}
+            />
+          }
           showsHorizontalScrollIndicator={false}
         />
       </View>
-      <View style={{flex: 2}}>
+      <View style={{ flex: 2 }}>
         <Text style={styles.cardHeading}>Funds</Text>
+        <Text style={styles.cardHeading}>{currentAccount}</Text>
       </View>
     </View>
   );
