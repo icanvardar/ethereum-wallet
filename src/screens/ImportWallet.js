@@ -16,7 +16,7 @@ export default ImportWallet = () => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["red", "transparent"]}
+        colors={["#9147FF", "transparent"]}
         style={{
           position: "absolute",
           left: 0,
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   cardText: {
     fontFamily: "BalsamiqBold",
     fontSize: 15,
-    color: "tomato",
+    color: "#9147FF",
   },
   cardDescript: {
     fontFamily: "BalsamiqBold",

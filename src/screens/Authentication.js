@@ -28,7 +28,7 @@ export default Authorization = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["red", "transparent"]}
+        colors={["#9147FF", "transparent"]}
         style={styles.linearGradient}
       />
       <View style={styles.headingView}>
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   informativeCard2: {
     justifyContent: "center",
-    backgroundColor: "tomato",
+    backgroundColor: "#9147FF",
     borderColor: "#fff",
     height: 140,
     width: width / 1.2,
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     fontFamily: "BalsamiqBold",
     fontSize: 30,
     marginBottom: 10,
-    color: "tomato",
+    color: "#9147FF",
   },
   cardHeading2: {
     fontFamily: "BalsamiqBold",
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   },
   cardText1: {
     fontFamily: "Balsamiq",
-    color: "tomato",
+    color: "#9147FF",
   },
   cardText2: {
     fontFamily: "Balsamiq",

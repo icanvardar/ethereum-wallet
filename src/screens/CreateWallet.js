@@ -95,7 +95,7 @@ export default CreateWallet = () => {
       enabled={true}
     >
       <LinearGradient
-        colors={["red", "transparent"]}
+        colors={["#9147FF", "transparent"]}
         style={styles.gradientStyle}
       />
 
@@ -123,7 +123,7 @@ export default CreateWallet = () => {
                 }}
                 name="copy"
                 size={24}
-                color="tomato"
+                color="#9147FF"
               />
             ) : (
               <Text style={styles.mnemonicCopy}>Copied</Text>
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   mnemonicCopy: {
     textAlign: "right",
     marginTop: -20,
-    color: "tomato",
+    color: "#9147FF",
     fontFamily: "Balsamiq",
   },
   cardContainer: {
@@ -237,17 +237,17 @@ const styles = StyleSheet.create({
         elevation: 15,
       },
     }),
-    color: "tomato",
+    color: "#9147FF",
     fontFamily: "Balsamiq",
     fontSize: 16,
   },
   mnemonicText: {
     fontFamily: "BalsamiqBold",
     fontSize: 25,
-    color: "tomato",
+    color: "#9147FF",
   },
   continueButton: {
-    backgroundColor: "tomato",
+    backgroundColor: "#9147FF",
     borderColor: "#fff",
     height: 50,
     width: width / 3,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
         elevation: 15,
       },
     }),
-    color: "tomato",
+    color: "#9147FF",
     fontFamily: "Balsamiq",
     fontSize: 16,
   },
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   errorMessageText: {
     fontFamily: "BalsamiqBold",
     fontSize: 16,
-    color: "tomato",
+    color: "#9147FF",
   },
   gradientStyle: {
     position: "absolute",
