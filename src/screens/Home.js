@@ -1,13 +1,67 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
-import { StyleSheet, Text, View, Dimensions, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  FlatList,
+  Button,
+  TouchableWithoutFeedback,
+} from "react-native";
 import AccountCard from "../components/AccountCard";
+import TokenInfo from "../components/TokenInfo";
 import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
+import HomeCollapsible from "../components/HomeCollapsible";
+
+import * as JsSearch from "js-search";
+import axios from "axios";
+import {
+  Jhaystack,
+  TraversalStrategy,
+  ComparisonStrategy,
+  SortingStrategy,
+} from "jhaystack";
 
 import { WalletContext } from "../context/WalletProvider";
 
 const { height, width } = Dimensions.get("window");
 
 export default Home = () => {
+  const [searchResult, setSearchResult] = useState(null);
+  const [ethBalance, setETHBalance] = useState(null);
+
+  const getETHBalance = () => {
+    axios.get(
+      `https://api.etherscan.io/api?module=account&action=balance&address=0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae&tag=latest&apikey=YourApiKeyToken`
+    )
+    .then((data) => {
+      console.log(data.data.result);
+      setETHBalance(data.data.result);
+    })
+    .catch((err) => console.log(err));
+  }
+
+  useEffect(() => {
+      // getETHBalance();
+  }, []);
+
+  const searchJSONData = (data, searchPhrase) => {
+    const se = new Jhaystack()
+      .setTraversalStrategy(
+        TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH_ORDERED
+      )
+      .setComparisonStrategy([
+        ComparisonStrategy.STARTS_WITH,
+        ComparisonStrategy.FUZZY_SEQUENCE,
+      ])
+      .setSortingStrategy([SortingStrategy.SORT_BY_ATTRIBUTE])
+      .setLimit(2)
+      .setDataset(data);
+    const results = se.search(searchPhrase);
+    setSearchResult(results);
+  };
+
   let listRef = useRef(null);
 
   const directListItems = (index) => {
@@ -18,13 +72,14 @@ export default Home = () => {
     listRef.scrollToEnd();
   };
 
-  const { wallet, accountCount, currentAccount } = useContext(
-    WalletContext
-  );
-
-  // if (wallet) {
-  //   console.log(wallet.accounts[0].accountName);
-  // }
+  const {
+    wallet,
+    accountCount,
+    currentAccountIndex,
+    isNewToken,
+    addNewToken,
+    currentAccountAddress
+  } = useContext(WalletContext);
 
   return (
     <View style={styles.container}>
@@ -36,7 +91,6 @@ export default Home = () => {
             <AccountCard
               length={wallet && wallet.accounts.length}
               index={index}
-              accountName={wallet.accounts[index].accountName}
               directListItems={directListItems}
               directListItemsToEnd={directListItemsToEnd}
               item={item}
@@ -57,9 +111,9 @@ export default Home = () => {
           showsHorizontalScrollIndicator={false}
         />
       </View>
-      <View style={{ flex: 2 }}>
-        <Text style={styles.cardHeading}>Funds</Text>
-        <Text style={styles.cardHeading}>{currentAccount}</Text>
+      <View style={{ flex: 2, alignItems: "center" }}>
+        <HomeCollapsible heading={"Funds"} operation={"funds"}/>
+        <HomeCollapsible heading={"History"} operation={"history"}/>
       </View>
     </View>
   );
@@ -80,5 +134,5 @@ const styles = StyleSheet.create({
     color: "white",
     paddingBottom: 10,
     paddingLeft: 25,
-  },
+  }
 });

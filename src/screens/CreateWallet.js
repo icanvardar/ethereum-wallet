@@ -59,7 +59,23 @@ export default CreateWallet = () => {
       accounts: [
         {
           address: walletInstance.signingKey.address,
-          accountName: "Account 1"
+          accountName: "Account 1",
+          tokenAddresses: [
+            {
+              name: "Tether",
+              symbol: "USDT",
+              image: "https://ethplorer.io/images/tether.png",
+              address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+              decimals: "6"
+            },
+            {
+              name: "HoloToken",
+              symbol: "HOT",
+              image: "http://ethplorer.io/images/holo.png",
+              address: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2",
+              decimals: "18"
+            }
+          ]
         }
       ],
       accountsCount: 0,

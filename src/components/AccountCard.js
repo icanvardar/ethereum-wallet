@@ -23,14 +23,14 @@ export default AccountCard = (props) => {
     accountCount,
     addNewAccount,
     isNewAccount,
-    currentAccount,
-    setCurrentAccount,
+    currentAccountIndex,
+    setCurrentAccountIndex,
   } = useContext(WalletContext);
 
   const goForward = () => {
     if (props.length !== props.index + 1) {
       props.directListItems(props.index + 1);
-      setCurrentAccount(currentAccount + 1);
+      setCurrentAccountIndex(currentAccountIndex + 1);
     } else {
       props.directListItemsToEnd();
     }
@@ -38,7 +38,12 @@ export default AccountCard = (props) => {
 
   const goBackward = () => {
     props.directListItems(props.index - 1);
-    setCurrentAccount(currentAccount - 1);
+    setCurrentAccountIndex(currentAccountIndex - 1);
+  };
+
+  const createNewAccount = () => {
+    addNewAccount();
+    setCurrentAccountIndex(currentAccountIndex + 1);
   };
 
   useEffect(() => {
@@ -65,7 +70,7 @@ export default AccountCard = (props) => {
             </View>
             <View style={styles.cardMiddleSide}>
               <Text>{props.item.address}</Text>
-              <Text>{props.accountName}</Text>
+              <Text>{props.item.accountName}</Text>
               {base64Blockie !== null && (
                 <Image
                   source={{
@@ -93,12 +98,7 @@ export default AccountCard = (props) => {
               )}
             </View>
             <View style={styles.cardMiddleSide}>
-              <TouchableOpacity
-                onPress={() => {
-                  addNewAccount();
-                  setCurrentAccount(currentAccount + 1);
-                }}
-              >
+              <TouchableOpacity onPress={() => createNewAccount()}>
                 <Text>Add New Account</Text>
               </TouchableOpacity>
               <Text>{isNewAccount && <Text>Fetching...</Text>}</Text>
