@@ -11,7 +11,7 @@ import {
 import AccountCard from "../components/AccountCard";
 import TokenInfo from "../components/TokenInfo";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Octicons, FontAwesome5 } from "@expo/vector-icons";
 import HomeCollapsible from "../components/HomeCollapsible";
 
 import * as JsSearch from "js-search";
@@ -29,23 +29,7 @@ const { height, width } = Dimensions.get("window");
 
 export default Home = () => {
   const [searchResult, setSearchResult] = useState(null);
-  const [ethBalance, setETHBalance] = useState(null);
-
-  const getETHBalance = () => {
-    axios.get(
-      `https://api.etherscan.io/api?module=account&action=balance&address=0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae&tag=latest&apikey=YourApiKeyToken`
-    )
-    .then((data) => {
-      console.log(data.data.result);
-      setETHBalance(data.data.result);
-    })
-    .catch((err) => console.log(err));
-  }
-
-  useEffect(() => {
-      // getETHBalance();
-  }, []);
-
+  
   const searchJSONData = (data, searchPhrase) => {
     const se = new Jhaystack()
       .setTraversalStrategy(
@@ -78,14 +62,30 @@ export default Home = () => {
     currentAccountIndex,
     isNewToken,
     addNewToken,
-    currentAccountAddress
+    currentAccountAddress,
+    currentAccountColor,
   } = useContext(WalletContext);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.cardHeading}>Accounts</Text>
-      <View style={{ flex: 1 }}>
+      <View
+        style={styles.topElementsView}
+      >
+        <View style={{ paddingLeft: 30 }}>
+          <Text style={[styles.cardHeading, { color: currentAccountColor }]}>
+            Accounts
+          </Text>
+        </View>
+        <View
+          style={styles.topElementsViewRight}
+        >
+          <FontAwesome5 name="pen" style={styles.topElementLeftIcon} size={24} color={currentAccountColor} />
+          <Octicons name="gear" style={styles.topElementRightIcon} size={30} color={currentAccountColor} />
+        </View>
+      </View>
+      <View>
         <FlatList
+          style={styles.balanceCardsList}
           data={wallet && wallet.accounts}
           renderItem={({ item, index }) => (
             <AccountCard
@@ -111,9 +111,9 @@ export default Home = () => {
           showsHorizontalScrollIndicator={false}
         />
       </View>
-      <View style={{ flex: 2, alignItems: "center" }}>
-        <HomeCollapsible heading={"Funds"} operation={"funds"}/>
-        <HomeCollapsible heading={"History"} operation={"history"}/>
+      <View style={{ alignItems: "center" }}>
+        <HomeCollapsible heading={"Funds"} operation={"funds"} />
+        <HomeCollapsible heading={"History"} operation={"history"} />
       </View>
     </View>
   );
@@ -122,17 +122,23 @@ export default Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    paddingTop: 40,
     backgroundColor: "white",
   },
   cardHeading: {
-    textShadowColor: "rgba(0.75, 0.75, 0.75, 0.75)",
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
-    fontSize: 35,
+    // textShadowColor: "rgba(0.75, 0.75, 0.75, 0.75)",
+    // textShadowOffset: { width: -1, height: 1 },
+    // textShadowRadius: 10,
+    fontSize: 30,
     fontFamily: "BalsamiqBold",
-    color: "white",
-    paddingBottom: 10,
-    paddingLeft: 25,
-  }
+  },
+  topElementsView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  topElementsViewRight: { paddingRight: 30, paddingTop: 10, flexDirection: "row" },
+  topElementRightIcon: {paddingLeft: 5}, 
+  topElementLeftIcon: {paddingRight: 5},
+  balanceCardsList: { paddingHorizontal: 20, height: 230 }
 });

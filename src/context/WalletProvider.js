@@ -11,9 +11,13 @@ const WalletProvider = ({ children }) => {
   const [isNewToken, , setIsNewToken] = useState(false);
   const [currentAccountIndex, setCurrentAccountIndex] = useState(0);
   const [currentAccountAddress, setCurrentAccountAddress] = useState(null);
+  const [currentAccountColor, setCurrentAccountColor] = useState(null);
 
   useEffect(() => {
-    wallet !== null && setCurrentAccountAddress(wallet.accounts[currentAccountIndex].address);
+    if (wallet !== null) {
+      setCurrentAccountAddress(wallet.accounts[currentAccountIndex].address);
+      setCurrentAccountColor(wallet.accounts[currentAccountIndex].accountColor);
+    }
   }, [wallet, currentAccountIndex])
 
   useEffect(() => {
@@ -39,6 +43,7 @@ const WalletProvider = ({ children }) => {
     tempWallet.accounts.push({
       address: mnemonicWallet.signingKey.address,
       accountName: `Account ${accountsCount + 1}`,
+      accountColor: "#9147FF",
       tokenAddresses: [
         {
           name: "Tether",
@@ -93,6 +98,7 @@ const WalletProvider = ({ children }) => {
         setCurrentAccountIndex,
         isNewToken,
         addNewToken,
+        currentAccountColor
       }}
     >
       {children}

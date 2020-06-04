@@ -9,8 +9,9 @@ import {
   View,
   Image,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import makeBlockie from "ethereum-blockies-base64";
+import axios from "axios";
 
 import { WalletContext } from "../context/WalletProvider";
 
@@ -18,6 +19,8 @@ const { height, width } = Dimensions.get("window");
 
 export default AccountCard = (props) => {
   const [base64Blockie, setBase64Blockie] = useState(null);
+  const [ethBalance, setETHBalance] = useState(null);
+
   const {
     wallet,
     accountCount,
@@ -25,6 +28,7 @@ export default AccountCard = (props) => {
     isNewAccount,
     currentAccountIndex,
     setCurrentAccountIndex,
+    currentAccountColor,
   } = useContext(WalletContext);
 
   const goForward = () => {
@@ -46,6 +50,24 @@ export default AccountCard = (props) => {
     setCurrentAccountIndex(currentAccountIndex + 1);
   };
 
+  const getETHBalance = () => {
+    axios
+      .get(
+        `https://api.etherscan.io/api?module=account&action=balancemulti&address=${props.item.address}&tag=latest&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`
+      )
+      .then((data) => {
+        console.log(data.data.result);
+        setETHBalance(data.data.result[0].balance);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    if (props.item) {
+      // getETHBalance();
+    }
+  }, [props.item]);
+
   useEffect(() => {
     if (base64Blockie === null && props.item) {
       setBase64Blockie(makeBlockie(props.item.address));
@@ -53,39 +75,104 @@ export default AccountCard = (props) => {
   }, [props.item]);
 
   return (
-    <ImageBackground
-      style={styles.balanceCard}
-      imageStyle={styles.cardBackgroundImage}
-      source={{ uri: "https://gradientjoy.com/300x400?id=31" + props.index }}
-    >
+    <View style={styles.balanceCard}>
       <View style={styles.container}>
         {props.isAccountAdder !== true ? (
-          <>
-            <View style={styles.cardLeftSide}>
-              {props.index !== 0 && (
-                <TouchableOpacity onPress={goBackward}>
-                  <Ionicons name="ios-arrow-back" size={36} color="white" />
-                </TouchableOpacity>
-              )}
+          <View style={styles.cardView}>
+            <View style={styles.cardTopView}>
+              <View style={styles.cardLeftSide}>
+                {props.index !== 0 && (
+                  <TouchableOpacity onPress={goBackward}>
+                    <Ionicons
+                      name="ios-arrow-back"
+                      size={36}
+                      color={currentAccountColor}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+              <View style={styles.cardMiddleSide}>
+                <View style={styles.cardAccountInfoView}>
+                  <View>
+                    <FontAwesome5
+                      name="ethereum"
+                      size={44}
+                      color={currentAccountColor}
+                    />
+                  </View>
+                  <View style={styles.cardAccountInfoViewRight}>
+                    <View>
+                      <Text
+                        style={[styles.cardAccountName, { color: currentAccountColor }]}
+                      >
+                        {props.item.accountName}
+                      </Text>
+                    </View>
+                    <View>
+                      <Text
+                        style={[styles.cardAccountAddress, {color: currentAccountColor}]}
+                      >
+                        {props.item.address.substring(0, 6)}...{props.item.address.substring(props.item.address.length-4, props.item.address.length)}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View>
+                  {
+                    ethBalance !== null ?
+                    <Text style={[styles.cardBalanceSection, { color: currentAccountColor }]}>{ethBalance} ETH</Text>
+                    :
+                    <Text>Loading...</Text>
+                  }
+                </View>
+
+                <View style={{ flexDirection: "row" }}>
+                  <View
+                    style={[
+                      styles.cardButton,
+                      { backgroundColor: currentAccountColor },
+                    ]}
+                  >
+                      <MaterialIcons
+                        name="call-received"
+                        size={20}
+                        color="white"
+                      />
+                  </View>
+                  <View
+                    style={[
+                      styles.cardButton,
+                      { backgroundColor: "white", marginLeft: 10 },
+                    ]}
+                  >
+                      <MaterialIcons
+                        name="call-made"
+                        size={20}
+                        color={currentAccountColor}
+                      />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.cardRightSide}>
+                {props.index === currentAccountIndex && (
+                  <TouchableOpacity onPress={goForward}>
+                    <Ionicons
+                      name="ios-arrow-forward"
+                      size={36}
+                      color={currentAccountColor}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-            <View style={styles.cardMiddleSide}>
-              <Text>{props.item.address}</Text>
-              <Text>{props.item.accountName}</Text>
-              {base64Blockie !== null && (
-                <Image
-                  source={{
-                    uri: `data:image/png;base64,${base64Blockie}`,
-                  }}
-                  style={{ height: 50, width: 50 }}
-                />
-              )}
-            </View>
-            <View style={styles.cardRightSide}>
-              <TouchableOpacity onPress={goForward}>
-                <Ionicons name="ios-arrow-forward" size={36} color="white" />
-              </TouchableOpacity>
-            </View>
-          </>
+            <View
+              style={[
+                styles.cardBottomView,
+                { backgroundColor: currentAccountColor },
+              ]}
+            />
+          </View>
         ) : (
           <>
             <View style={styles.cardLeftSide}>
@@ -93,7 +180,11 @@ export default AccountCard = (props) => {
                 <TouchableOpacity
                   onPress={() => props.directListItems(props.length - 1)}
                 >
-                  <Ionicons name="ios-arrow-back" size={36} color="white" />
+                  <Ionicons
+                    name="ios-arrow-back"
+                    size={36}
+                    color={currentAccountColor}
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -109,7 +200,7 @@ export default AccountCard = (props) => {
           </>
         )}
       </View>
-    </ImageBackground>
+    </View>
   );
 };
 
@@ -121,8 +212,9 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
     height: 200,
     width: width / 1.2,
-    borderRadius: 20,
+    borderRadius: 15,
     marginHorizontal: 10,
+    marginTop: 5,
     ...Platform.select({
       ios: {
         shadowColor: "rgba(0,0,0, 0.4)",
@@ -131,13 +223,51 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
       },
       android: {
-        elevation: 15,
+        elevation: 7,
       },
     }),
   },
-  cardBackgroundImage: {
-    borderRadius: 20,
+  cardButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "#fff",
+    height: 30,
+    width: width / 4,
+    borderRadius: 15,
+    ...Platform.select({
+      ios: {
+        shadowColor: "rgba(0,0,0, 0.4)",
+        shadowOffset: { height: 3, width: 0 },
+        shadowOpacity: 0.7,
+        shadowRadius: 5,
+      },
+      android: {
+        elevation: 7,
+      },
+    }),
   },
+  cardView: { flex: 1 },
+  cardTopView: { flex: 15, flexDirection: "row" },
+  cardBottomView: {
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    height: "100%",
+    width: "100%",
+    flex: 1,
+  },
+  cardAccountInfoView: { flexDirection: "row"},
+  cardAccountInfoViewRight: {flexDirection: "column", paddingLeft: 10},
+  cardAccountName: {
+    fontFamily: "BalsamiqBold",
+    fontSize: 18,
+  },
+  cardAccountAddress: {
+    fontFamily: "Balsamiq",
+    fontSize: 14
+  },
+  cardBalanceSection: {fontFamily: "BalsamiqBold", fontSize: 35},
   container: {
     flex: 1,
     flexDirection: "row",

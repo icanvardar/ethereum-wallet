@@ -60,6 +60,7 @@ export default CreateWallet = () => {
         {
           address: walletInstance.signingKey.address,
           accountName: "Account 1",
+          accountColor: "#9147FF",
           tokenAddresses: [
             {
               name: "Tether",
@@ -95,13 +96,7 @@ export default CreateWallet = () => {
     >
       <LinearGradient
         colors={["red", "transparent"]}
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          top: 0,
-          height,
-        }}
+        style={styles.gradientStyle}
       />
 
       <View
@@ -155,7 +150,7 @@ export default CreateWallet = () => {
             <Text style={styles.errorMessageText}>{errorMessage}</Text>
           }
           <TouchableNativeFeedback disabled={buttonDisabled} onPress={setWallet}>
-            <View style={buttonDisabled ? styles.continueButtonDisabled : styles.continueButton}>
+            <View style={[styles.continueButton,  buttonDisabled && {opacity: 0.6} ]}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </View>
           </TouchableNativeFeedback>
@@ -277,33 +272,6 @@ const styles = StyleSheet.create({
     fontFamily: "Balsamiq",
     fontSize: 16,
   },
-  continueButtonDisabled: {
-    backgroundColor: "tomato",
-    opacity: 0.6,
-    borderColor: "#fff",
-    height: 50,
-    width: width / 3,
-    borderRadius: 5,
-    marginHorizontal: 10,
-    marginVertical: 15,
-    paddingHorizontal: 25,
-    alignItems: "center",
-    justifyContent: "center",
-    ...Platform.select({
-      ios: {
-        shadowColor: "rgba(0,0,0, 0.4)",
-        shadowOffset: { height: 3, width: 0 },
-        shadowOpacity: 0.7,
-        shadowRadius: 5,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
-    color: "tomato",
-    fontFamily: "Balsamiq",
-    fontSize: 16,
-  },
   continueButtonText: {
     fontFamily: "BalsamiqBold",
     fontSize: 16,
@@ -314,4 +282,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "tomato",
   },
+  gradientStyle: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height,
+  }
 });

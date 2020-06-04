@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import axios from "axios";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Entypo, FontAwesome5 } from "@expo/vector-icons";
 
 import { WalletContext } from "../context/WalletProvider";
 import TokenInfo from "./TokenInfo";
@@ -66,15 +66,24 @@ const HomeCollapsible = (props) => {
     isNewToken,
     addNewToken,
     currentAccountAddress,
+    currentAccountColor
   } = useContext(WalletContext);
 
   return (
     <>
       <TouchableWithoutFeedback onPress={() => setIsOpen(!isOpen)}>
-        <View style={styles.infoView}>
+        <View style={[styles.infoView, { backgroundColor: currentAccountColor }]}>
           <View style={styles.infoViewInside}>
             <View style={styles.infoViewLeft}>
-              <Text style={styles.infoViewText}>{props.heading}</Text>
+              <Text style={styles.infoViewText}>
+                  {
+                    props.operation === "funds" ?
+                    <Entypo name="wallet" size={24} color="white" />
+                    :
+                    <FontAwesome5 name="history" size={20} color="white" />
+                  }
+                  {" " + props.heading}
+                </Text>
             </View>
             <View style={styles.infoViewRight}>
               {isOpen ? (
@@ -113,7 +122,6 @@ const HomeCollapsible = (props) => {
 const styles = StyleSheet.create({
   infoView: {
     justifyContent: "center",
-    backgroundColor: "tomato",
     alignItems: "flex-start",
     borderColor: "#fff",
     height: 50,
