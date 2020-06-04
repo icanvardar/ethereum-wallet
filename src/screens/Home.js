@@ -29,6 +29,7 @@ const { height, width } = Dimensions.get("window");
 
 export default Home = () => {
   const [searchResult, setSearchResult] = useState(null);
+  const [currentCollapsible, setCurrentCollapsible] = useState(null);
   
   const searchJSONData = (data, searchPhrase) => {
     const se = new Jhaystack()
@@ -112,8 +113,8 @@ export default Home = () => {
         />
       </View>
       <View style={{ alignItems: "center" }}>
-        <HomeCollapsible heading={"Funds"} operation={"funds"} />
-        <HomeCollapsible heading={"History"} operation={"history"} />
+        <HomeCollapsible currentCollapsible={currentCollapsible} setCurrentCollapsible={setCurrentCollapsible} heading={"Funds"} operation={"funds"} />
+        <HomeCollapsible currentCollapsible={currentCollapsible} setCurrentCollapsible={setCurrentCollapsible} heading={"History"} operation={"history"} />
       </View>
     </View>
   );

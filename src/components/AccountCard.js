@@ -12,7 +12,7 @@ import {
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import makeBlockie from "ethereum-blockies-base64";
 import axios from "axios";
-
+import { addressShortener } from "../helper/addressShortener";
 import { WalletContext } from "../context/WalletProvider";
 
 const { height, width } = Dimensions.get("window");
@@ -112,7 +112,7 @@ export default AccountCard = (props) => {
                       <Text
                         style={[styles.cardAccountAddress, {color: currentAccountColor}]}
                       >
-                        {props.item.address.substring(0, 6)}...{props.item.address.substring(props.item.address.length-4, props.item.address.length)}
+                        {addressShortener(props.item.address)}
                       </Text>
                     </View>
                   </View>

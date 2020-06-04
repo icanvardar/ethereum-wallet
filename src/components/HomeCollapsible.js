@@ -8,9 +8,8 @@ import {
   Button,
   TouchableWithoutFeedback,
 } from "react-native";
-import axios from "axios";
 import { Ionicons, Entypo, FontAwesome5 } from "@expo/vector-icons";
-
+import axios from "axios";
 import { WalletContext } from "../context/WalletProvider";
 import TokenInfo from "./TokenInfo";
 import HistoryInfo from "./HistoryInfo";
@@ -18,46 +17,8 @@ const { height, width } = Dimensions.get("window");
 
 const HomeCollapsible = (props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [tokenBalances, setTokenBalances] = useState(null);
   const [ethTxnHistory, setETHTxnHistory] = useState(null);
   const [tokenTxnHistory, setTokenTxnHistory] = useState(null);
-  const [selectedHistory, setSelectedHistory] = useState(null);
-
-  const getTokenBalances = () => {
-    axios
-      .get(
-        `https://api.ethplorer.io/getAddressInfo/${currentAccountAddress}?apiKey=freekey`
-      )
-      .then((data) => {
-        console.log(data.data);
-        setTokenBalances(data.data.tokens);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const getEthereumTransactionHistory = () => {
-    axios.get(`https://api.etherscan.io/api?module=account&action=txlist&address=0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`)
-    .then(data => {
-      console.log(data.data.result);
-      setETHTxnHistory(data.data.result);
-    })
-    .catch((err) => console.log(err));
-}
-
-  const getTokenTransactionHistory = () => {
-      axios.get(`https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2&page=1&offset=10&sort=asc&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`)
-      .then(data => {
-        console.log(data.data.result);
-        setTokenTxnHistory(data.data.result);
-      })
-      .catch((err) => console.log(err));
-  }
-
-  useEffect(() => {
-    // getTokenBalances()
-    // getTokenTransactionHistory();
-    // getEthereumTransactionHistory();
-  }, []);
 
   const {
     wallet,
@@ -66,24 +27,67 @@ const HomeCollapsible = (props) => {
     isNewToken,
     addNewToken,
     currentAccountAddress,
-    currentAccountColor
+    currentAccountColor,
   } = useContext(WalletContext);
+
+  useEffect(() => {
+    if (
+      (props.currentCollapsible === "history" && props.operation === "funds") ||
+      (props.currentCollapsible === "funds" && props.operation === "history")
+    ) {
+      setIsOpen(false);
+    }
+  }, [props.currentCollapsible]);
+
+  const getEthereumTransactionHistory = () => {
+    axios
+      .get(
+        `https://api.etherscan.io/api?module=account&action=txlist&address=0x8bC3da587DeF887B5C822105729ee1D6aF05A5ca&startblock=0&endblock=99999999&page=1&offset=5&sort=asc&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`
+      )
+      .then((data) => {
+        console.log(data.data.result);
+        setETHTxnHistory(data.data.result);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getTokenTransactionHistory = () => {
+    axios
+      .get(
+        `http://api.etherscan.io/api?module=account&action=tokentx&address=0xc32BE7517f37e39C3c17df9EA7397030f06E919f&startblock=0&endblock=999999999&page=1&offset=5&sort=asc&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`
+      )
+      .then((data) => {
+        console.log(data.data.result);
+        setTokenTxnHistory(data.data.result);
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={() => setIsOpen(!isOpen)}>
-        <View style={[styles.infoView, { backgroundColor: currentAccountColor }]}>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          setIsOpen(!isOpen);
+          if (props.operation === "funds") {
+            props.setCurrentCollapsible("funds");
+          } else if (props.operation === "history") {
+            props.setCurrentCollapsible("history");
+          }
+        }}
+      >
+        <View
+          style={[styles.infoView, { backgroundColor: currentAccountColor }]}
+        >
           <View style={styles.infoViewInside}>
             <View style={styles.infoViewLeft}>
               <Text style={styles.infoViewText}>
-                  {
-                    props.operation === "funds" ?
-                    <Entypo name="wallet" size={24} color="white" />
-                    :
-                    <FontAwesome5 name="history" size={20} color="white" />
-                  }
-                  {" " + props.heading}
-                </Text>
+                {props.operation === "funds" ? (
+                  <Entypo name="wallet" size={24} color="white" />
+                ) : (
+                  <FontAwesome5 name="history" size={20} color="white" />
+                )}
+                {" " + props.heading}
+              </Text>
             </View>
             <View style={styles.infoViewRight}>
               {isOpen ? (
@@ -107,12 +111,17 @@ const HomeCollapsible = (props) => {
       </TouchableWithoutFeedback>
       {isOpen && (
         <View style={styles.infoViewCollapsible}>
-          {
-              props.operation === "funds" ?
-              <TokenInfo></TokenInfo>
-              :
-                <HistoryInfo></HistoryInfo>
-          }
+          {props.operation === "funds" ? (
+            <TokenInfo fetchable={isOpen} />
+          ) : (
+            <HistoryInfo
+              fetchable={isOpen}
+              ethTxnHistory={ethTxnHistory}
+              getEthereumTransactionHistory={getEthereumTransactionHistory}
+              tokenTxnHistory={tokenTxnHistory}
+              getTokenTransactionHistory={getTokenTransactionHistory}
+            />
+          )}
         </View>
       )}
     </>
@@ -144,9 +153,8 @@ const styles = StyleSheet.create({
   infoViewCollapsible: {
     justifyContent: "center",
     backgroundColor: "white",
-    alignItems: "flex-start",
     borderColor: "#fff",
-    height: 50,
+    height: 250,
     width: width / 1.3,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
