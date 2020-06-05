@@ -11,14 +11,10 @@ import {
 import { Ionicons, Entypo, FontAwesome5 } from "@expo/vector-icons";
 import axios from "axios";
 import { WalletContext } from "../context/WalletProvider";
-import TokenInfo from "./TokenInfo";
-import HistoryInfo from "./HistoryInfo";
 const { height, width } = Dimensions.get("window");
 
 const HomeCollapsible = (props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [ethTxnHistory, setETHTxnHistory] = useState(null);
-  const [tokenTxnHistory, setTokenTxnHistory] = useState(null);
 
   const {
     wallet,
@@ -29,39 +25,6 @@ const HomeCollapsible = (props) => {
     currentAccountAddress,
     currentAccountColor,
   } = useContext(WalletContext);
-
-  useEffect(() => {
-    if (
-      (props.currentCollapsible === "history" && props.operation === "funds") ||
-      (props.currentCollapsible === "funds" && props.operation === "history")
-    ) {
-      setIsOpen(false);
-    }
-  }, [props.currentCollapsible]);
-
-  const getEthereumTransactionHistory = () => {
-    axios
-      .get(
-        `https://api.etherscan.io/api?module=account&action=txlist&address=0x8bC3da587DeF887B5C822105729ee1D6aF05A5ca&startblock=0&endblock=99999999&page=1&offset=5&sort=asc&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`
-      )
-      .then((data) => {
-        console.log(data.data.result);
-        setETHTxnHistory(data.data.result);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const getTokenTransactionHistory = () => {
-    axios
-      .get(
-        `http://api.etherscan.io/api?module=account&action=tokentx&address=0xc32BE7517f37e39C3c17df9EA7397030f06E919f&startblock=0&endblock=999999999&page=1&offset=5&sort=asc&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`
-      )
-      .then((data) => {
-        console.log(data.data.result);
-        setTokenTxnHistory(data.data.result);
-      })
-      .catch((err) => console.log(err));
-  };
 
   return (
     <>
@@ -111,17 +74,7 @@ const HomeCollapsible = (props) => {
       </TouchableWithoutFeedback>
       {isOpen && (
         <View style={styles.infoViewCollapsible}>
-          {props.operation === "funds" ? (
-            <TokenInfo fetchable={isOpen} />
-          ) : (
-            <HistoryInfo
-              fetchable={isOpen}
-              ethTxnHistory={ethTxnHistory}
-              getEthereumTransactionHistory={getEthereumTransactionHistory}
-              tokenTxnHistory={tokenTxnHistory}
-              getTokenTransactionHistory={getTokenTransactionHistory}
-            />
-          )}
+          <Text>Hello</Text>
         </View>
       )}
     </>
@@ -131,7 +84,6 @@ const HomeCollapsible = (props) => {
 const styles = StyleSheet.create({
   infoView: {
     justifyContent: "center",
-    alignItems: "flex-start",
     borderColor: "#fff",
     height: 50,
     width: width / 1.2,
@@ -174,13 +126,13 @@ const styles = StyleSheet.create({
     }),
   },
   infoViewInside: { justifyContent: "space-between", flexDirection: "row" },
-  infoViewLeft: { flex: 1 },
-  infoViewRight: { flex: 1, alignItems: "flex-end" },
+  infoViewLeft: {  },
+  infoViewRight: {  alignItems: "flex-end" },
   infoViewText: {
     color: "white",
     fontFamily: "Balsamiq",
     paddingLeft: 20,
-    fontSize: 25,
+    fontSize: 20,
   },
   infoViewIcon: { paddingRight: 20, paddingTop: 5 },
 });

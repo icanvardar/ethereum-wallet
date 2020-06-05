@@ -15,6 +15,8 @@ import Authentication from "../screens/Authentication";
 import ImportWallet from "../screens/ImportWallet";
 import CreateWallet from "../screens/CreateWallet";
 
+import { Entypo } from "@expo/vector-icons";
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -64,11 +66,34 @@ export default NavigationProvider = () => {
       )}
       {isAuthenticated === true && (
         <WalletProvider>
-          <Tab.Navigator>
-            <Tab.Screen name="Home" component={Home} />
-            <Tab.Screen name="Transaction" component={Transaction} />
-            <Tab.Screen name="History" component={History} />
-            <Tab.Screen name="Settings" component={Settings} />
+          <Tab.Navigator tabBarOptions={{ showLabel: false }}>
+            <Tab.Screen
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Entypo name="home" size={36} color={color} />
+                ),
+              }}
+              name="Home"
+              component={Home}
+            />
+            <Tab.Screen
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Entypo name="direction" size={36} color={color} />
+                ),
+              }}
+              name="Transaction"
+              component={Transaction}
+            />
+            <Tab.Screen
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Entypo name="list" size={36} color={color} />
+                ),
+              }}
+              name="History"
+              component={History}
+            />
           </Tab.Navigator>
         </WalletProvider>
       )}

@@ -43,23 +43,7 @@ const WalletProvider = ({ children }) => {
     tempWallet.accounts.push({
       address: mnemonicWallet.signingKey.address,
       accountName: `Account ${accountsCount + 1}`,
-      accountColor: "#9147FF",
-      tokenAddresses: [
-        {
-          name: "Tether",
-          symbol: "USDT",
-          image: "https://ethplorer.io/images/tether.png",
-          address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
-          decimals: "6"
-        },
-        {
-          name: "HoloToken",
-          symbol: "HOT",
-          image: "http://ethplorer.io/images/holo.png",
-          address: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2",
-          decimals: "18"
-        }
-      ]
+      accountColor: "#9147FF"
     });
     tempWallet.accountsCount = accountsCount;
     setWallet(tempWallet);
@@ -67,24 +51,20 @@ const WalletProvider = ({ children }) => {
     setIsNewAccount(false);
   };
 
-  const addNewToken = async (accountIndex, tokenObject) => {
-    setIsNewToken(true);
-    const { name, symbol, image, address, decimals } = tokenObject;
-
-    const tokenInstance = {
-      name,
-      symbol,
-      image,
-      address,
-      decimals,
-    };
-
-    let tempWallet = wallet;
-    tempWallet.accounts[accountIndex].tokenAddresses.push(tokenInstance);
-    setWallet(tempWallet);
-    await AsyncStorage.setItem("wallet", JSON.stringify(tempWallet));
-    setIsNewToken(false);
-  };
+  const createTx = (type) => {
+    const txInstance = {
+      txHash: "hash",
+      from: "you",
+      to: "me",
+      amount: "1",
+      timeStamp: "12312312",
+      tokenInfo: {
+        contractAddress: "ca",
+        tokenName: "name",
+        tokenSymbol: "symbol"
+      }
+    }
+  }
 
   return (
     <WalletContext.Provider
@@ -97,7 +77,6 @@ const WalletProvider = ({ children }) => {
         currentAccountAddress,
         setCurrentAccountIndex,
         isNewToken,
-        addNewToken,
         currentAccountColor
       }}
     >

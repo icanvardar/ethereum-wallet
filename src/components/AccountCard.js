@@ -9,8 +9,7 @@ import {
   View,
   Image,
 } from "react-native";
-import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import makeBlockie from "ethereum-blockies-base64";
+import { Ionicons, MaterialIcons, FontAwesome5, AntDesign, Feather } from "@expo/vector-icons";
 import axios from "axios";
 import { addressShortener } from "../helper/addressShortener";
 import { WalletContext } from "../context/WalletProvider";
@@ -64,13 +63,7 @@ export default AccountCard = (props) => {
 
   useEffect(() => {
     if (props.item) {
-      // getETHBalance();
-    }
-  }, [props.item]);
-
-  useEffect(() => {
-    if (base64Blockie === null && props.item) {
-      setBase64Blockie(makeBlockie(props.item.address));
+      getETHBalance();
     }
   }, [props.item]);
 
@@ -123,7 +116,7 @@ export default AccountCard = (props) => {
                     ethBalance !== null ?
                     <Text style={[styles.cardBalanceSection, { color: currentAccountColor }]}>{ethBalance} ETH</Text>
                     :
-                    <Text>Loading...</Text>
+                    <Text style={{color: currentAccountColor}}>Fetching balance...</Text>
                   }
                 </View>
 
@@ -137,7 +130,7 @@ export default AccountCard = (props) => {
                       <MaterialIcons
                         name="call-received"
                         size={20}
-                        color="white"
+                        color={"white"}
                       />
                   </View>
                   <View
