@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Ionicons, MaterialIcons, FontAwesome5, AntDesign, Feather } from "@expo/vector-icons";
 import axios from "axios";
-import { addressShortener } from "../helper/addressShortener";
+import { addressShortener } from "../helper/addressOperations";
 import { WalletContext } from "../context/WalletProvider";
 
 const { height, width } = Dimensions.get("window");

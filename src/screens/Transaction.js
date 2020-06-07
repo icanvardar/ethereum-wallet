@@ -5,40 +5,40 @@ import {
   View,
   TextInput,
   Dimensions,
-  TouchableOpacity,
+  TouchableOpacity
 } from "react-native";
-import { MaterialCommunityIcons, FontAwesome5 } from "@expo/vector-icons";
-import { BarCodeScanner } from "expo-barcode-scanner";
+import {
+  MaterialCommunityIcons,
+  FontAwesome5,
+  Entypo,
+} from "@expo/vector-icons";
 const { height, width } = Dimensions.get("window");
 import { WalletContext } from "../context/WalletProvider";
-import { addressShortener } from "../helper/addressShortener";
+import { addressShortener, addressEditor } from "../helper/addressOperations";
+import QRScanner from "../components/QRScanner";
+import AssetsPane from "../components/AssetsPane";
+import { utils } from "ethers";
 
 export default Transaction = () => {
-  const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [qrScannerOpen, setQRScannerOpen] = useState(false);
   const [recepientAddress, setRecepientAddress] = useState(null);
   const [amount, setAmount] = useState(null);
+  const [addressError, setAddressError] = useState(null);
+  const [isAssetsOpen, setIsAssetsOpen] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === "granted");
-    })();
-  }, []);
-
-  const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    setQRScannerOpen(false);
-    setRecepientAddress(data);
-  };
-
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
+    if (recepientAddress !== null) {
+      const address = addressEditor(recepientAddress);
+      try {
+        utils.getAddress(address);
+        setRecepientAddress(address);
+        setAddressError(null);
+      } catch (err) {
+        setAddressError("Incorrect address, please try again!");
+      }
+    }
+  }, [recepientAddress]);
 
   const {
     wallet,
@@ -54,60 +54,64 @@ export default Transaction = () => {
     <View style={styles.container}>
       {qrScannerOpen ? (
         <>
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
-          style={{ height: height / 1.5, width: width }}
-        />
-        <View style={{alignItems: "center", justifyContent: "center", paddingTop: 25}}>
-            <Text style={{color: currentAccountColor, fontFamily: "BalsamiqBold", fontSize: 16}}>Please scan address' QR Code!</Text>
-        </View>
+          <QRScanner
+            setData={setRecepientAddress}
+            scanned={scanned}
+            setScanned={setScanned}
+            setQRScannerOpen={setQRScannerOpen}
+          />
         </>
       ) : (
         <>
-          <View style={{ justifyContent: "center" }}>
-            <View style={styles.assetsCard}>
-              <Text
-                style={{
-                  paddingTop: 20,
-                  fontSize: 24,
-                  fontFamily: "BalsamiqBold",
-                  color: currentAccountColor,
-                }}
-              >
-                Asset
-              </Text>
-              <View>
-                <FontAwesome5 name="ethereum" size={24} color="black" />
+          <AssetsPane isOpen={isAssetsOpen} setIsOpen={setIsAssetsOpen}/>
+          {!recepientAddress ? (
+            <View style={styles.qrSection}>
+              <View style={{ marginLeft: 30 }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setQRScannerOpen(true);
+                    setScanned(false);
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="qrcode-scan"
+                    size={52}
+                    color={"black"}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={{ marginLeft: 20, flex: 1 }}>
+                <Text
+                  style={{
+                    fontFamily: "Balsamiq",
+                    color: currentAccountColor,
+                    fontSize: 18,
+                  }}
+                >
+                  Please press QR icon to scan recepient address.
+                </Text>
               </View>
             </View>
-          </View>
-          <View style={styles.input}>
-            <TextInput
-              style={{
-                flex: 6,
-                color: currentAccountColor,
-                fontFamily: "Balsamiq",
-                fontSize: 20,
-              }}
-              placeholder="Recipient Address"
-              onChangeText={text => setRecepientAddress(text)}
-              value={addressShortener(recepientAddress)}
-            />
-            <TouchableOpacity
-            style={{ flex: 1 }}
-              onPress={() => {
-                setQRScannerOpen(true);
-                setScanned(false);
-              }}
-            >
-              <MaterialCommunityIcons
-                name="qrcode-scan"
-                size={32}
-                color={currentAccountColor}
-              />
-            </TouchableOpacity>
-          </View>
+          ) : (
+            <View style={styles.input}>
+              <Text
+                style={{
+                  flex: 8,
+                  fontFamily: "Balsamiq",
+                  color: currentAccountColor,
+                  fontSize: 20,
+                }}
+              >
+                {addressShortener(recepientAddress)}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setRecepientAddress(null)}
+                style={{ flex: 1 }}
+              >
+                <Entypo name="cross" size={24} color={currentAccountColor} />
+              </TouchableOpacity>
+            </View>
+          )}
           <View style={styles.input}>
             <TextInput
               style={{
@@ -119,7 +123,7 @@ export default Transaction = () => {
               placeholder="Amount"
               keyboardType="number-pad"
             />
-            <TouchableOpacity style={{ flex: 1 }}>
+            <TouchableOpacity>
               <Text
                 style={{
                   color: currentAccountColor,
@@ -131,6 +135,13 @@ export default Transaction = () => {
               </Text>
             </TouchableOpacity>
           </View>
+          {addressError && (
+            <Text
+              style={{ color: "red", fontFamily: "Balsamiq", fontSize: 20 }}
+            >
+              {addressError}
+            </Text>
+          )}
           <TouchableOpacity
             style={[
               styles.sendButton,
@@ -156,15 +167,18 @@ const styles = StyleSheet.create({
     backgroundColor: "aliceblue",
     alignItems: "center",
   },
-  assetsCard: {
+  input: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
     backgroundColor: "white",
     borderColor: "#fff",
-    height: 150,
+    height: 50,
     width: width / 1.2,
     borderRadius: 5,
     marginHorizontal: 10,
     marginVertical: 10,
-    paddingHorizontal: 25,
     ...Platform.select({
       ios: {
         shadowColor: "rgba(0,0,0, 0.4)",
@@ -176,18 +190,14 @@ const styles = StyleSheet.create({
         elevation: 15,
       },
     }),
-    color: "#9147FF",
-    fontFamily: "Balsamiq",
-    fontSize: 16,
   },
-  input: {
+  qrSection: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
     backgroundColor: "white",
     borderColor: "#fff",
-    height: 50,
+    height: 100,
     width: width / 1.2,
     borderRadius: 5,
     marginHorizontal: 10,
