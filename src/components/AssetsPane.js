@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  FlatList,
 } from "react-native";
 import {
   MaterialCommunityIcons,
@@ -15,9 +16,32 @@ import {
   Ionicons,
 } from "@expo/vector-icons";
 import { WalletContext } from "../context/WalletProvider";
+import axios from "axios";
+import { utils } from "ethers";
 const { height, width } = Dimensions.get("window");
 
 const AssetsPane = (props) => {
+  const [eth, setETH] = useState(null);
+  const [tokens, setTokens] = useState(null);
+
+  const getTokenInfo = () => {
+    axios
+      .get(
+        "https://api.ethplorer.io/getAddressInfo/0xea3a46BD1dbd0620d80037f70d0bF7c7dc5a837C?apiKey=freekey"
+      )
+      .then((data) => {
+        setETH(data.data.ETH);
+        setTokens(data.data.tokens);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    getTokenInfo();
+  }, []);
+
   const {
     wallet,
     accountCount,
@@ -29,11 +53,13 @@ const AssetsPane = (props) => {
   } = useContext(WalletContext);
 
   return (
-    <TouchableWithoutFeedback
-      style={{ justifyContent: "center" }}
-      onPress={() => props.setIsOpen(true)}
-    >
-      <View style={[styles.assetsCard, props.isOpen ? {height: 250} : {height: 125}]}>
+    <View style={{ justifyContent: "center" }}>
+      <View
+        style={[
+          styles.assetsCard,
+          props.isOpen ? { height: 250 } : { height: 125 },
+        ]}
+      >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text
             style={{
@@ -69,11 +95,19 @@ const AssetsPane = (props) => {
             )}
           </View>
         </View>
-        <TouchableWithoutFeedback onPress={() => props.setIsOpen(false)}>
-          <FontAwesome5 name="ethereum" size={24} color="black" />
-        </TouchableWithoutFeedback>
+        {props.isOpen ? (
+          <FlatList
+            data={tokens}
+            renderItem={({ item, index }) => <Text>{item.tokenInfo.name} - {item.balance.toFixed()}</Text>}
+            keyExtractor={(item) => item.tokenInfo.address}
+          />
+        ) : (
+          <TouchableWithoutFeedback onPress={() => props.setIsOpen(true)}>
+            <Text>Tokens are here</Text>
+          </TouchableWithoutFeedback>
+        )}
       </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 };
 

@@ -13,11 +13,11 @@ import { Ionicons, MaterialIcons, FontAwesome5, AntDesign, Feather } from "@expo
 import axios from "axios";
 import { addressShortener } from "../helper/addressOperations";
 import { WalletContext } from "../context/WalletProvider";
+import { utils } from "ethers";
 
 const { height, width } = Dimensions.get("window");
 
 export default AccountCard = (props) => {
-  const [base64Blockie, setBase64Blockie] = useState(null);
   const [ethBalance, setETHBalance] = useState(null);
 
   const {
@@ -52,11 +52,12 @@ export default AccountCard = (props) => {
   const getETHBalance = () => {
     axios
       .get(
-        `https://api.etherscan.io/api?module=account&action=balancemulti&address=${props.item.address}&tag=latest&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`
+        `https://api.etherscan.io/api?module=account&action=balance&address=0xea3a46BD1dbd0620d80037f70d0bF7c7dc5a837C&tag=latest&apikey=V645J9EGC1UT8R1GB8MBAY3CZAAI7MADUP`
       )
       .then((data) => {
         console.log(data.data.result);
-        setETHBalance(data.data.result[0].balance);
+        console.log(utils.formatEther(data.data.result));
+        setETHBalance(data.data.result);
       })
       .catch((err) => console.log(err));
   };
@@ -114,7 +115,7 @@ export default AccountCard = (props) => {
                 <View>
                   {
                     ethBalance !== null ?
-                    <Text style={[styles.cardBalanceSection, { color: currentAccountColor }]}>{ethBalance} ETH</Text>
+                    <Text style={[styles.cardBalanceSection, { color: currentAccountColor }]}>{utils.formatEther(ethBalance).slice(0, 4)} ETH</Text>
                     :
                     <Text style={{color: currentAccountColor}}>Fetching balance...</Text>
                   }
